@@ -8,11 +8,11 @@ const CertificateList = () => {
   );
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <h2>Loading...</h2>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <h2>Error: {error}</h2>;
   }
 
   return (

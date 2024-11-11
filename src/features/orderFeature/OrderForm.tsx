@@ -2,6 +2,13 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RootState, useDispatch, useSelector } from '@/app/store/store';
 import { CertificateData } from '@/types';
+import {
+  formatPhoneNumber,
+  validateEmail,
+  validateName,
+  validatePhone,
+  validatePhoneNumber,
+} from '@/utils/orderForm.helper';
 import st from './OrderForm.module.css';
 import {
   clearErrors,
@@ -14,98 +21,50 @@ type TOrderProps = {
   certificateInfo: CertificateData | null;
 };
 
-const OrderForm: React.FC<TOrderProps> = ({ certificateInfo }) => {
+export const OrderForm: React.FC<TOrderProps> = ({ certificateInfo }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { name, phone, email, errors } = useSelector(
+  const { name, phone, email, errors, loading, success } = useSelector(
     (state: RootState) => state.order,
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     dispatch(clearErrors());
-
     dispatch(
       setFieldValue({ field: name as 'name' | 'phone' | 'email', value }),
     );
 
     if (name === 'name') {
-      if (!value) {
-        dispatch(setFieldError({ field: 'name', error: 'Имя обязательно' }));
-      } else if (value.length < 3) {
-        dispatch(
-          setFieldError({
-            field: 'name',
-            error: 'Имя должно быть не менее 3 символов',
-          }),
-        );
-      } else if (/\d/.test(value)) {
-        dispatch(
-          setFieldError({
-            field: 'name',
-            error: 'Имя не должно содержать цифры',
-          }),
-        );
-      } else {
-        dispatch(setFieldError({ field: 'name', error: '' }));
-      }
+      const error = validateName(value);
+      dispatch(setFieldError({ field: 'name', error }));
     }
 
     if (name === 'email') {
-      if (!value) {
-        dispatch(setFieldError({ field: 'email', error: 'Почта обязательна' }));
-      } else if (!/\S+@\S+\.\S+/.test(value)) {
-        dispatch(
-          setFieldError({ field: 'email', error: 'Неверный формат почты' }),
-        );
-      } else {
-        dispatch(setFieldError({ field: 'email', error: '' }));
-      }
+      const error = validateEmail(value);
+      dispatch(setFieldError({ field: 'email', error }));
     }
   };
 
   const handleChangeTelephone = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    dispatch(clearErrors());
-
-    let formattedValue = value.replace(/\D/g, '');
-
     if (name === 'phone') {
-      if (!formattedValue.startsWith('7')) {
-        formattedValue = '7' + formattedValue;
-      }
+      const formattedValue = formatPhoneNumber(value);
 
-      if (formattedValue.length <= 1) {
-        formattedValue = '+7';
-      } else if (formattedValue.length <= 4) {
-        formattedValue = `+7 (${formattedValue.slice(1)}`;
-      } else if (formattedValue.length <= 7) {
-        formattedValue = `+7 (${formattedValue.slice(1, 4)}) ${formattedValue.slice(4)}`;
-      } else if (formattedValue.length <= 9) {
-        formattedValue = `+7 (${formattedValue.slice(1, 4)}) ${formattedValue.slice(4, 7)} - ${formattedValue.slice(7)}`;
-      } else {
-        formattedValue = `+7 (${formattedValue.slice(1, 4)}) ${formattedValue.slice(4, 7)} - ${formattedValue.slice(7, 9)} - ${formattedValue.slice(9, 11)}`;
-      }
-    }
+      dispatch(
+        setFieldValue({
+          field: name as 'name' | 'phone' | 'email',
+          value: formattedValue,
+        }),
+      );
 
-    dispatch(
-      setFieldValue({
-        field: name as 'name' | 'phone' | 'email',
-        value: formattedValue,
-      }),
-    );
-
-    if (name === 'phone') {
-      if (!formattedValue) {
-        dispatch(
-          setFieldError({ field: 'phone', error: 'Телефон обязателен' }),
-        );
-      } else if (formattedValue.replace(/\D/g, '').slice(1, 11).length < 10) {
+      const phoneError = validatePhoneNumber(formattedValue);
+      if (phoneError) {
         dispatch(
           setFieldError({
             field: 'phone',
-            error: 'Телефон должен быть не менее 11 символов',
+            error: phoneError,
           }),
         );
       } else {
@@ -116,39 +75,22 @@ const OrderForm: React.FC<TOrderProps> = ({ certificateInfo }) => {
 
   const validateForm = (): boolean => {
     let isValid = true;
+    const nameError = validateName(name || '');
+    const phoneError = validatePhone(phone || '');
+    const emailError = validateEmail(email || '');
 
-    if (!name) {
-      dispatch(setFieldError({ field: 'name', error: 'Имя обязательно' }));
-      isValid = false;
-    } else if (name.length < 3) {
-      dispatch(
-        setFieldError({
-          field: 'name',
-          error: 'Имя должно быть не менее 3 символов',
-        }),
-      );
-      isValid = false;
-    } else if (/\d/.test(name)) {
-      dispatch(
-        setFieldError({
-          field: 'name',
-          error: 'Имя не должно содержать цифры',
-        }),
-      );
+    if (nameError) {
+      dispatch(setFieldError({ field: 'name', error: nameError }));
       isValid = false;
     }
 
-    if (!phone || phone?.replace(/\D/g, '').slice(1, 11).length < 10) {
-      dispatch(
-        setFieldError({ field: 'phone', error: 'Неверный формат телефона' }),
-      );
+    if (phoneError) {
+      dispatch(setFieldError({ field: 'phone', error: phoneError }));
       isValid = false;
     }
 
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      dispatch(
-        setFieldError({ field: 'email', error: 'Неверный формат почты' }),
-      );
+    if (emailError) {
+      dispatch(setFieldError({ field: 'email', error: emailError }));
       isValid = false;
     }
 
@@ -173,7 +115,9 @@ const OrderForm: React.FC<TOrderProps> = ({ certificateInfo }) => {
       };
 
       dispatch(submitOrder(orderData));
-      navigate('/payment');
+      setTimeout(() => {
+        navigate('/payment');
+      }, 1000);
     }
   };
 
@@ -184,6 +128,14 @@ const OrderForm: React.FC<TOrderProps> = ({ certificateInfo }) => {
   useEffect(() => {
     dispatch(clearErrors());
   }, [dispatch]);
+
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
+
+  if (success) {
+    return <h2>Переходим на страницу оплаты...</h2>;
+  }
 
   return (
     <div className={st.formContainer}>
@@ -238,5 +190,3 @@ const OrderForm: React.FC<TOrderProps> = ({ certificateInfo }) => {
     </div>
   );
 };
-
-export default OrderForm;
