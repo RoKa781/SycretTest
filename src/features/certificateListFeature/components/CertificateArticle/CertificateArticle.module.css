@@ -1,0 +1,81 @@
+.certificateItem {
+  list-style: none;
+  margin: 20px 0;
+  position: relative;
+}
+
+.certificateArticle {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--modules-color-accent);
+  border-radius: 8px;
+  padding: 20px;
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.orderLink {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  text-decoration: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-color-accent);
+  padding: 10px;
+  background-color: var(--extra-color-accent);
+  transition: background-color 0.5s ease;
+}
+
+.orderLink:hover {
+  background-color: var(--modules-color-accent);
+}
+
+.certificateArticle:hover {
+  transform: translateY(-5px);
+  background-color: var(--hover-color-accent);
+}
+
+.certificateImage {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.certificateTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--extra-color-accent);
+  margin-bottom: 10px;
+}
+
+.certificateDescription {
+  font-size: 14px;
+  color: var(--text-color-accent);
+  margin-bottom: 10px;
+}
+
+.certificatePrice {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+}
+
+.price {
+  color: var(--text-color-accent);
+  font-weight: 700;
+}
+
+.discount {
+  color: var(--extra-color-accent);
+  font-weight: bold;
+  margin-left: 10px;
+}

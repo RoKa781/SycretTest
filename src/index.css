@@ -1,0 +1,18 @@
+:root {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 10px;
+  font-family: 'Play', serif;
+  background-color: var(--bg-color-accent);
+  color: var(--text-color-accent);
+  --font-family-accent: 'Play', serif;
+  --bg-color-accent: #39323d;
+  --text-color-accent: #b393a9;
+  --hover-color-accent: #7b6679;
+  --modules-color-accent: #534755;
+  --extra-color-accent: #fecde8;
+}
+
+* {
+  box-sizing: border-box;
+}
