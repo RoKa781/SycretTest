@@ -7,24 +7,15 @@
   color: var(--text-color-accent);
 }
 
-.logo {
+.title {
   font-size: 40px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--text-color-accent);
 }
 
-.nav {
-  display: flex;
-  gap: 1rem;
-}
-
-.navItem {
-  color: var(--text-color-accent);
-  text-decoration: none;
-  font-family: var(--font-family-accent);
-}
-
-.navItem:hover {
-  color: var(--hover-color-accent);
+@media (max-width: 400px) {
+  .title {
+    font-size: 30px;
+  }
 }

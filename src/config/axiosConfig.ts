@@ -6,11 +6,10 @@ const axiosInstance = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
       ? 'https://cors-anywhere.herokuapp.com/https://sycret.ru'
-      : 'https://cors-anywhere.herokuapp.com/https://sycret.ru',
+      : '',
   headers: {
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
-    'Access-Control-Allow-Origin': '*',
   },
 });
 
